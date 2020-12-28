@@ -72,16 +72,26 @@ class NeweggSpider(scrapy.Spider):
                     yield Request(url, callback=self.parse, dont_filter=True)
 
             # Login Password. (Page 3)
+            # try:
+            #     print("\nAttempting Password. (Page 3)\n")
+            #     self.wait.until(EC.visibility_of_element_located((By.ID, "labeled-input-password")))
+            #     password = self.driver.find_element_by_id("labeled-input-password")
+            #     password.send_keys("###") # NEWEGG PASSWORD HERE
+            #     password.send_keys(Keys.ENTER)
+            # except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
+            #     if error:
+            #         print("\nDid Not Use Password. (Page 3)\n")
             try:
-                print("\nAttempting Password. (Page 3)\n")
-                self.wait.until(EC.visibility_of_element_located((By.ID, "labeled-input-password")))
-                password = self.driver.find_element_by_id("labeled-input-password")
-                password.send_keys("###") # NEWEGG PASSWORD HERE
-                password.send_keys(Keys.ENTER)
+                print("\nMoving on with payment (Page 3)\n")
+                test123 = self.driver.find_element_by_xpath("//*[@class='btn btn-primary checkout-step-action-done layout-quarter']").is_enabled()
+                if test123:
+                    time.sleep(1)
+                    self.driver.find_element_by_xpath("//*[@class='btn btn-primary checkout-step-action-done layout-quarter']").click()
             except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
                 if error:
-                    print("\nDid Not Use Password. (Page 3)\n")
-
+                    print("\nNot WORKING\n")
+                    time.sleep(3)
+                    yield Request(url, callback=self.parse, dont_filter=True)
             # Submit CVV Code(Must type CVV number. (Page 4)
             try:
                 print("\nTrying Credit Card CVV Number. (Page 4)\n")
