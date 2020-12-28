@@ -2,7 +2,8 @@
 scrapping bot, dont abuse, get one card and go.
 
 1. You will need twilio, scrapy, and selnium pip installed. 
-2. They have requirements, I am too lazt to provide a simple fix is by downloading py charm and installing them through that. It will install them for you and you can run the nex steps from them. 
+
+2. You may need to install requirments, do pip3 install -r requirements.txt 
 
 3. Set up your newegg. 1. Login and save login, Save card on your account, and address saved. Find your firefox profile, should be in users, will be different for windows/linux.
 
