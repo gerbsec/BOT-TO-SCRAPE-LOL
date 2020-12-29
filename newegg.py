@@ -12,6 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common import action_chains 
 import os
 
 # Twilio credentials
@@ -34,7 +35,7 @@ class NeweggSpider(scrapy.Spider):
                  "Chrome/43.0.2357.130 Safari/537.36 "
 
     # product_url = "https://www.newegg.com/p/pl?d=3080&N=100007709%204841%2050001314%204021%2050001315%2050001312%2050001402&isdeptsrh=1"
-    product_url = 'https://www.newegg.com/adata-model-auv350-32g-rbk-32gb/p/N82E16820215361?Description=usb&cm_re=usb-_-20-215-361-_-Product'
+    product_url = 'https://www.newegg.com/adata-model-auv350-64g-rbk-64gb/p/N82E16820215341?Item=N82E16820215341&quicklink=true'
 
     def __init__(self, *args, **kwargs):
         options = Options()
@@ -69,13 +70,15 @@ class NeweggSpider(scrapy.Spider):
                 "//*[@class='btn btn-primary btn-wide']").click()
 
     def handle_checkout_steps(self):
+        action = action_chains.ActionChains(self.driver)
         print("\nHandling checkout steps\n")
-        selector = "//*[@class='btn btn-primary checkout-step-action-done layout-quarter']"
-        available = self.driver.find_element_by_xpath(selector).is_enabled()
+        xpath = "//*[@class='btn btn-primary checkout-step-action-done layout-quarter']"
+        available = self.driver.find_element_by_xpath(xpath).is_enabled()
         if available:
-            time.sleep(1)
-            self.driver.find_element_by_xpath(selector).click()
-
+            self.wait.until(
+            EC.visibility_of_element_located((By.XPATH, xpath)))
+            time.sleep(.5)
+            self.driver.find_element_by_xpath(xpath).click()
     def get_products(self):
         self.products = self.driver.find_element_by_xpath(
             "//*[@class='btn btn-primary btn-mini']").text.strip()
@@ -126,6 +129,7 @@ class NeweggSpider(scrapy.Spider):
                 yield Request(self.product_url, callback=self.parse, dont_filter=True)
 
             try:
+                time.sleep(2)
                 self.handle_checkout_steps()
             except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
                 print("\nUnable to handle checkout steps\n")
