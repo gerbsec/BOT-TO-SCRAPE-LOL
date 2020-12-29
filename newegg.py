@@ -69,7 +69,7 @@ class NeweggSpider(scrapy.Spider):
 
     def handle_checkout_steps(self):
         print("\nHandling checkout steps\n")
-        xpath = "//*[@class='btn btn-primary checkout-step-action-done layout-quarter']"
+        xpath = "/html/body/div[7]/div/section/div/div/form/div[2]/div[1]/div/div[2]/div/div[3]/button"
         available = self.driver.find_element_by_xpath(xpath).is_enabled()
         if available:
             time.sleep(1)
