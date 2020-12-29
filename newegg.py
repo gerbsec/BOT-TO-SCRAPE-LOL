@@ -27,7 +27,7 @@ class NeweggSpider(scrapy.Spider):
 
     cvv = "123"
 
-    firefox_profile_path = "/home/jaydlc/.mozilla/firefox/4unhxga4.default-release"
+    firefox_profile_path = "/home/gerber/.mozilla/firefox/inr4vjj4.default-release"
 
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) " \
                  "Chrome/43.0.2357.130 Safari/537.36 "
@@ -69,11 +69,11 @@ class NeweggSpider(scrapy.Spider):
 
     def handle_checkout_steps(self):
         print("\nHandling checkout steps\n")
-        selector = ".row-body > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3) > button:nth-child(2)"
-        available = self.driver.find_element_by_css_selector(selector)
+        selector = "//*[@class='btn btn-primary checkout-step-action-done layout-quarter']"
+        available = self.driver.find_element_by_xpath(selector).is_enabled()
         if available:
             time.sleep(1)
-            self.driver.find_element_by_css_selector(selector).click()
+            self.driver.find_element_by_xpath(selector).click()
 
     def get_products(self):
         self.products = self.driver.find_element_by_xpath(
