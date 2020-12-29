@@ -56,25 +56,22 @@ class NeweggSpider(scrapy.Spider):
         self.driver.find_element_by_xpath(
             add_to_cart_xpath).click()
 
-    # def move_to_checkout(self):
-    #     print("\nGoing to Checkout Cart. (Page 2)\n")
-    #     self.driver.get(
-    #         "https://secure.newegg.com/Shopping/ShoppingCart.aspx?Submit=view")  
-    #     try:
-    #         print("\nClicking Secure Checkout. (Page 2)\n")
-    #         available = self.driver.find_element_by_xpath(
-    #             "//*[@class='btn btn-primary btn-wide']").is_enabled()
-    #         if available:
-    #             time.sleep(1)
-    #             self.driver.find_element_by_xpath(
-    #                 "//*[@class='btn btn-primary btn-wide']").click()
-    #             return True
-    #     except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
-    #         if error:
-    #             print("\nSecuring Checkout button is not Clickable.\n")
-    #             print(error)
-    #             time.sleep(3)
-    #             yield Request(self.product_url, callback=self.parse, dont_filter=True)
+    def move_to_checkout(self):
+        print("\nClicking Secure Checkout. (Page 2)\n")
+        available = self.driver.find_element_by_xpath(
+            "//*[@class='btn btn-primary btn-wide']").is_enabled()
+        if available:
+            time.sleep(1)
+            self.driver.find_element_by_xpath(
+                "//*[@class='btn btn-primary btn-wide']").click()
+
+    def handle_checkout_steps(self):
+        print("\nHandling checkout steps\n")
+        xpath = "//*[@class='btn btn-primary checkout-step-action-done layout-quarter']"
+        available = self.driver.find_element_by_xpath(xpath).is_enabled()
+        if available:
+            time.sleep(1)
+            self.driver.find_element_by_xpath(xpath).click()
 
     def get_products(self):
         self.products = self.driver.find_element_by_xpath(
@@ -82,6 +79,20 @@ class NeweggSpider(scrapy.Spider):
 
     def product_available(self):
         return len(self.products)
+
+    def login_with_password(self):
+        # Login Password. (Page 3)
+        try:
+            print("\nAttempting Password. (Page 3)\n")
+            self.wait.until(EC.visibility_of_element_located(
+                (By.ID, "labeled-input-password")))
+            password = self.driver.find_element_by_id(
+                "labeled-input-password")
+            password.send_keys(self.newegg_password)
+            password.send_keys(Keys.ENTER)
+        except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
+            if error:
+                print("\nDid Not Use Password. (Page 3)\n")
 
     def parse(self, response, *args, **kwargs):
         self.driver.get(self.product_url)
@@ -93,45 +104,32 @@ class NeweggSpider(scrapy.Spider):
                 print("\nProduct is Available.\n")
                 self.add_to_cart()
         except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
-            if error:
-                print("\nProduct Sold Out: Retrying in 3 Seconds.\n")
-                time.sleep(3)
-                yield Request(self.product_url, callback=self.parse, dont_filter=True)
+            print("\nProduct Sold Out: Retrying in 3 Seconds.\n")
+            time.sleep(3)
+            yield Request(self.product_url, callback=self.parse, dont_filter=True)
 
         if self.product_available():
             # Going to Check Out Page. (Page 2)
-            # self.move_to_checkout()
 
             print("\nGoing to Checkout Cart. (Page 2)\n")
             self.driver.get(
-                "https://secure.newegg.com/Shopping/ShoppingCart.aspx?Submit=view")  
+                "https://secure.newegg.com/Shopping/ShoppingCart.aspx?Submit=view")
             try:
-                print("\nClicking Secure Checkout. (Page 2)\n")
-                available = self.driver.find_element_by_xpath(
-                    "//*[@class='btn btn-primary btn-wide']").is_enabled()
-                if available:
-                    time.sleep(1)
-                    self.driver.find_element_by_xpath(
-                        "//*[@class='btn btn-primary btn-wide']").click()
-                    return True
+                self.move_to_checkout()
             except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
-                if error:
-                    print("\nSecuring Checkout button is not Clickable.\n")
-                    print(error)
-                    time.sleep(3)
-                    yield Request(self.product_url, callback=self.parse, dont_filter=True)
-            # Login Password. (Page 3)
-            # try:
-            #     print("\nAttempting Password. (Page 3)\n")
-            #     self.wait.until(EC.visibility_of_element_located(
-            #         (By.ID, "labeled-input-password")))
-            #     password = self.driver.find_element_by_id(
-            #         "labeled-input-password")
-            #     password.send_keys(self.newegg_password)
-            #     password.send_keys(Keys.ENTER)
-            # except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
-            #     if error:
-            #         print("\nDid Not Use Password. (Page 3)\n")
+                print("\nSecuring Checkout button is not Clickable.\n")
+                print(error)
+                time.sleep(3)
+                yield Request(self.product_url, callback=self.parse, dont_filter=True)
+
+            
+            try:
+                self.handle_checkout_steps()
+            except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
+                print("\nUnable to handle checkout steps\n")
+                print(error)
+                time.sleep(3)
+                yield Request(self.product_url, callback=self.parse, dont_filter=True)
 
             # Submit CVV Code(Must type CVV number. (Page 4)
             try:
