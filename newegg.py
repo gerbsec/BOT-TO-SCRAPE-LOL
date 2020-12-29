@@ -25,7 +25,7 @@ class NeweggSpider(scrapy.Spider):
     twilio_email = ""
     twilio_password = ""
 
-    firefox_profile_path = "/home/jaydlc/.mozilla/firefox/4unhxga4.default-release"
+    firefox_profile_path = "/home/gerber/.mozilla/firefox/inr4vjj4.default-release"
 
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) " \
                  "Chrome/43.0.2357.130 Safari/537.36 "
@@ -67,7 +67,7 @@ class NeweggSpider(scrapy.Spider):
 
     def handle_checkout_steps(self):
         print("\nHandling checkout steps\n")
-        xpath = "//*[@class='btn btn-primary checkout-step-action-done layout-quarter']"
+        xpath = "/html/body/div[7]/div/section/div/div/form/div[2]/div[1]/div/div[2]/div/div[3]/button"
         available = self.driver.find_element_by_xpath(xpath).is_enabled()
         if available:
             time.sleep(1)
