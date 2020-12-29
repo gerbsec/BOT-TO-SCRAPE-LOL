@@ -9,7 +9,7 @@ scrapping bot, dont abuse, get one card and go.
 
 4. fill out information, your newegg password, cvv and phone numbers if you use twilio, log in with twilio also. 
 
-5. Finally go to terminal and type scrapy start project examplename example directory.
+5. Finally go to terminal and type scrapy startproject examplename example directory.
 
 6. Put this python script in the 'spiders' directory.
 
