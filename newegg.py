@@ -69,11 +69,11 @@ class NeweggSpider(scrapy.Spider):
 
     def handle_checkout_steps(self):
         print("\nHandling checkout steps\n")
-        xpath = "/html/body/div[7]/div/section/div/div/form/div[2]/div[1]/div/div[2]/div/div[3]/button"
-        available = self.driver.find_element_by_xpath(xpath).is_enabled()
+        selector = ".row-body > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3) > button:nth-child(2)"
+        available = self.driver.find_element_by_css_selector(selector)
         if available:
             time.sleep(1)
-            self.driver.find_element_by_xpath(xpath).click()
+            self.driver.find_element_by_css_selector(selector).click()
 
     def get_products(self):
         self.products = self.driver.find_element_by_xpath(
