@@ -12,6 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
+import os
 
 # Twilio credentials
 
@@ -27,7 +28,7 @@ class NeweggSpider(scrapy.Spider):
 
     cvv = "123"
 
-    firefox_profile_path = "/home/gerber/.mozilla/firefox/inr4vjj4.default-release"
+    firefox_profile_path = os.environ["FIREFOX_PROFILE"]
 
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) " \
                  "Chrome/43.0.2357.130 Safari/537.36 "
