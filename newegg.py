@@ -25,6 +25,8 @@ class NeweggSpider(scrapy.Spider):
     twilio_email = ""
     twilio_password = ""
 
+    cvv = "123"
+
     firefox_profile_path = "/home/jaydlc/.mozilla/firefox/4unhxga4.default-release"
 
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) " \
@@ -122,7 +124,6 @@ class NeweggSpider(scrapy.Spider):
                 time.sleep(3)
                 yield Request(self.product_url, callback=self.parse, dont_filter=True)
 
-            
             try:
                 self.handle_checkout_steps()
             except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
@@ -140,7 +141,7 @@ class NeweggSpider(scrapy.Spider):
                     "//input[@class='form-text mask-cvv-4'][@type='text']")
                 time.sleep(1)
                 security_code.send_keys(
-                    Keys.BACK_SPACE + Keys.BACK_SPACE + Keys.BACK_SPACE + "123")  # You can enter your CVV number here.!!!!!!!!!
+                    Keys.BACK_SPACE + Keys.BACK_SPACE + Keys.BACK_SPACE + self.cvv)
             except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException) as error:
                 if error:
                     print("\nCould Not Type CVV. (Page 4)\n")
