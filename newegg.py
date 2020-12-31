@@ -74,8 +74,8 @@ class NeweggSpider(scrapy.Spider):
             client.messages \
                     .create(
                         body="Bot just added item to cart, check it out!",
-                        from_='+13019797858',
-                        to='+18134633376'
+                        from_='twilio number',
+                        to='+your number'
                     )
 
     def parse(self, response, *args, **kwargs):
