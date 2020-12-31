@@ -49,7 +49,7 @@ class NeweggSpider(scrapy.Spider):
 
     def add_to_cart(self):
         print("\nFound 1 item to add to cart.\n")
-        add_to_cart_xpath = "//*[@class='btn btn-primary btn-wide']"
+        add_to_cart_xpath = "//*[@class='btn btn-primary btn-wide']" # Use btn-wide if you are using a link for a specific item, and btn-mini for a list
         # Wait until we can click on the add to cart button
         self.wait.until(
             EC.visibility_of_element_located((By.XPATH, add_to_cart_xpath)))
@@ -74,9 +74,12 @@ class NeweggSpider(scrapy.Spider):
             client.messages \
                     .create(
                         body="Bot just added item to cart, check it out!",
-                        from_='+13019797858',
-                        to='+18134633376'
+                        from_='Twilio Number',
+                        to='Your Number'
                     )
+        else:
+            print("f")
+            yield Request(self.product_url, callback=self.parse, dont_filter=True)
 
     def parse(self, response, *args, **kwargs):
         self.driver.get(self.product_url)
@@ -101,3 +104,4 @@ class NeweggSpider(scrapy.Spider):
             self.ensure_success()
         except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException):
             print("f")
+            yield Request(self.product_url, callback=self.parse, dont_filter=True)
