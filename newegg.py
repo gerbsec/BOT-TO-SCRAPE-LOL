@@ -12,9 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common import action_chains
 import os
-from pprint import pprint
 
 # Twilio credentials
 
@@ -28,11 +26,9 @@ class NeweggSpider(scrapy.Spider):
     firefox_profile_path = os.environ["FIREFOX_PROFILE"]
     
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) " \
-                 "Chrome/43.0.2357.130 Safari/537.36"
+                "Chrome/43.0.2357.130 Safari/537.36"
 
-    # product_url = "https://www.newegg.com/p/pl?d=3080&N=100007709%204841%2050001314%204021%2050001315%2050001312%2050001402&isdeptsrh=1"
-    product_url = 'https://www.newegg.com/adata-model-auv350-64g-rbk-64gb/p/N82E16820215341?Item=N82E16820215341&quicklink=true'
-
+    product_url = ''
     def __init__(self, *args, **kwargs):
         options = Options()
         options.headless = False
@@ -59,7 +55,7 @@ class NeweggSpider(scrapy.Spider):
 
     def get_products(self):
         self.products = self.driver.find_element_by_xpath(
-            "//*[@class='btn btn-primary btn-mini']").text.strip()
+            "//*[@class='btn btn-primary btn-wide']").text.strip() # Use btn-wide if you are using a link for a specific item, and btn-mini for a list
 
     def product_available(self):
         return len(self.products)
@@ -67,19 +63,15 @@ class NeweggSpider(scrapy.Spider):
     def ensure_success(self):
         print("\nEnsuring that product is in fact, in the cart.\n")
         time.sleep(1)
-        available = self.driver.find_element_by_xpath(
-            "//*[@class='btn btn-primary btn-wide']").is_enabled()
+        available = self.driver.find_element_by_xpath("//*[@class='btn btn-primary btn-wide']").is_enabled()
         if available:
-            print("It is!")
+            print("\nIt is!\n")
             client.messages \
                     .create(
                         body="Bot just added item to cart, check it out!",
                         from_='Twilio Number',
                         to='Your Number'
                     )
-        else:
-            print("f")
-            yield Request(self.product_url, callback=self.parse, dont_filter=True)
 
     def parse(self, response, *args, **kwargs):
         self.driver.get(self.product_url)
@@ -99,9 +91,13 @@ class NeweggSpider(scrapy.Spider):
             print("\nHopefully, in cart now!\n")
             self.driver.get(
                 "https://secure.newegg.com/Shopping/ShoppingCart.aspx?Submit=view")
-        time.sleep(.5)
-        try:
-            self.ensure_success()
-        except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException):
-            print("f")
-            yield Request(self.product_url, callback=self.parse, dont_filter=True)
+            time.sleep(.5)
+            try:
+                self.ensure_success()
+                print("\nStarting again in 3 seconds.\n")
+                time.sleep(3)
+                yield Request(self.product_url, callback=self.parse, dont_filter=True)
+            except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException):
+                print("f")
+                time.sleep(3)
+                yield Request(self.product_url, callback=self.parse, dont_filter=True)
