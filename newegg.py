@@ -104,7 +104,4 @@ class NeweggSpider(scrapy.Spider):
             self.ensure_success()
         except (AttributeError, NoSuchElementException, WebDriverException, TimeoutException):
             print("f")
-<<<<<<< HEAD
             yield Request(self.product_url, callback=self.parse, dont_filter=True)
-=======
->>>>>>> 72532bd8255c3f80ceed14520c686c5d4f7b0da9
