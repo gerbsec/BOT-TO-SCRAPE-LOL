@@ -18,8 +18,8 @@ from pprint import pprint
 
 # Twilio credentials
 
-twilio_sid = "AC51c6555c51a15a7b0541c70db5dac231"
-twilio_authtoken = "e6806cbac87a7fa5c31d025612ebf0ac"
+twilio_sid = ""
+twilio_authtoken = ""
 client = Client(twilio_sid, twilio_authtoken)
 
 class NeweggSpider(scrapy.Spider):
