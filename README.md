@@ -28,3 +28,5 @@ INSTRUCTIONS:
 9. Don't abuse, get one card for yourself and get rid of this bot.
 
 10. I am not responsible for what you do with this bot. This bot was my creation to buy a 3080.
+
+# This doesn't work anymore as Newegg changed their checkout methodology
